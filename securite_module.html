@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module Sécurité – Résumé Complet</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060d1a;
+    --bg2: #0b1628;
+    --bg3: #0e1f38;
+    --panel: #0d1f35;
+    --border: #1a3a5c;
+    --accent: #00e5ff;
+    --accent2: #00ff88;
+    --accent3: #ff6b35;
+    --accent4: #ffd700;
+    --danger: #ff3d5a;
+    --text: #c8dff5;
+    --text2: #7ba3c8;
+    --text3: #3d6b99;
+    --white: #e8f4ff;
+    --glow: 0 0 20px rgba(0,229,255,0.3);
+    --glow2: 0 0 20px rgba(0,255,136,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  .hero {
+    position: relative;
+    padding: 60px 40px 50px;
+    background: linear-gradient(135deg, #060d1a 0%, #0a1a30 50%, #071224 100%);
+    border-bottom: 2px solid var(--border);
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 16px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(32px, 5vw, 58px);
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 10px 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .stat span { display: block; color: var(--text2); font-size: 11px; margin-bottom: 2px; }
+
+  /* PROGRESS */
+  .progress-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  #progress-label { color: var(--accent); min-width: 50px; text-align: right; }
+
+  /* NAV PILLS */
+  .nav-section {
+    padding: 24px 20px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .nav-pill {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .nav-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SECTION DIVIDER */
+  .phase-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 50px 0 30px;
+  }
+  .phase-divider::before, .phase-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border));
+  }
+  .phase-divider::after { background: linear-gradient(90deg, var(--border), transparent); }
+  .phase-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .phase-label.prev { border-color: var(--accent2); color: var(--accent2); }
+  .phase-label.detect { border-color: var(--accent4); color: var(--accent4); }
+  .phase-label.resp { border-color: var(--accent3); color: var(--accent3); }
+  .phase-label.analyse { border-color: #a855f7; color: #a855f7; }
+  .phase-label.best { border-color: var(--accent); color: var(--accent); }
+
+  /* LESSON CARD */
+  .lesson {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .lesson:hover { border-color: rgba(0,229,255,0.4); }
+  .lesson::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent);
+  }
+  .lesson.prev::before { background: var(--accent2); }
+  .lesson.detect::before { background: var(--accent4); }
+  .lesson.resp::before { background: var(--accent3); }
+  .lesson.analyse::before { background: #a855f7; }
+  .lesson.best::before { background: linear-gradient(180deg, var(--accent), var(--accent2)); }
+
+  .lesson-header {
+    padding: 20px 24px 16px 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    user-select: none;
+  }
+  .lesson-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    min-width: 30px;
+    padding-top: 4px;
+  }
+  .lesson-title-block { flex: 1; }
+  .lesson-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+  .lesson-tag.intro { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.3); }
+  .lesson-tag.prev { background: rgba(0,255,136,0.1); color: var(--accent2); border: 1px solid rgba(0,255,136,0.3); }
+  .lesson-tag.detect { background: rgba(255,215,0,0.1); color: var(--accent4); border: 1px solid rgba(255,215,0,0.3); }
+  .lesson-tag.resp { background: rgba(255,107,53,0.1); color: var(--accent3); border: 1px solid rgba(255,107,53,0.3); }
+  .lesson-tag.analyse { background: rgba(168,85,247,0.1); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+  .lesson-tag.aws { background: rgba(255,107,53,0.15); color: #ff9f6b; border: 1px solid rgba(255,107,53,0.4); }
+  .lesson-tag.best { background: rgba(0,229,255,0.08); color: var(--accent); border: 1px solid rgba(0,229,255,0.2); }
+
+  .lesson h2 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+  .lesson-toggle {
+    font-size: 18px;
+    color: var(--text3);
+    transition: transform 0.3s;
+    padding-top: 4px;
+    min-width: 20px;
+    text-align: center;
+  }
+  .lesson.open .lesson-toggle { transform: rotate(180deg); }
+
+  .lesson-body {
+    display: none;
+    padding: 0 28px 24px 28px;
+    border-top: 1px solid var(--border);
+  }
+  .lesson.open .lesson-body { display: block; }
+
+  /* CONCEPT BLOCKS */
+  .concepts {
+    margin-top: 20px;
+    display: grid;
+    gap: 14px;
+  }
+  .concept {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 18px;
+    position: relative;
+  }
+  .concept-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .concept-title.g { color: var(--accent2); }
+  .concept-title.o { color: var(--accent3); }
+  .concept-title.y { color: var(--accent4); }
+  .concept-title.p { color: #a855f7; }
+  .concept p { font-size: 15px; color: var(--text); line-height: 1.7; }
+  .concept ul { list-style: none; margin-top: 8px; }
+  .concept ul li {
+    font-size: 15px;
+    color: var(--text);
+    padding: 3px 0 3px 18px;
+    position: relative;
+  }
+  .concept ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+    font-size: 11px;
+    top: 5px;
+  }
+
+  .key-box {
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    line-height: 1.6;
+  }
+  .key-box.g { border-left-color: var(--accent2); background: rgba(0,255,136,0.04); color: var(--accent2); }
+  .key-box.o { border-left-color: var(--accent3); background: rgba(255,107,53,0.04); color: var(--accent3); }
+  .key-box.y { border-left-color: var(--accent4); background: rgba(255,215,0,0.04); color: var(--accent4); }
+
+  /* QCM */
+  .qcm-section {
+    margin-top: 28px;
+    border-top: 1px dashed var(--border);
+    padding-top: 20px;
+  }
+  .qcm-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .qcm-q {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+  }
+  .qcm-q .q-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .qcm-options { display: flex; flex-direction: column; gap: 7px; }
+  .qcm-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: var(--text);
+    position: relative;
+  }
+  .qcm-opt:hover { border-color: rgba(0,229,255,0.3); background: rgba(0,229,255,0.04); }
+  .qcm-opt.selected { border-color: var(--accent); background: rgba(0,229,255,0.08); color: var(--white); }
+  .qcm-opt.correct { border-color: var(--accent2)!important; background: rgba(0,255,136,0.1)!important; color: var(--accent2)!important; }
+  .qcm-opt.wrong { border-color: var(--danger)!important; background: rgba(255,61,90,0.1)!important; color: var(--danger)!important; }
+  .opt-letter {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    min-width: 18px;
+    color: var(--text3);
+    padding-top: 1px;
+  }
+  .qcm-opt.correct .opt-letter { color: var(--accent2); }
+  .qcm-opt.wrong .opt-letter { color: var(--danger); }
+  .q-btn {
+    margin-top: 12px;
+    padding: 7px 18px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .q-btn:hover { background: var(--accent); color: var(--bg); }
+  .q-btn:disabled { opacity: 0.4; cursor: default; }
+  .q-feedback {
+    margin-top: 10px;
+    font-size: 13px;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 8px 12px;
+    display: none;
+  }
+  .q-feedback.show { display: block; }
+  .q-feedback.correct { color: var(--accent2); background: rgba(0,255,136,0.06); border: 1px solid rgba(0,255,136,0.2); }
+  .q-feedback.wrong { color: var(--danger); background: rgba(255,61,90,0.06); border: 1px solid rgba(255,61,90,0.2); }
+  .score-badge {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    padding: 5px 14px;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--accent);
+  }
+
+  /* FINAL ASSIGNMENT */
+  .assignment {
+    margin-top: 60px;
+    background: linear-gradient(135deg, #060f1e, #0a1930);
+    border: 2px solid var(--accent);
+    padding: 0;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,229,255,0.1);
+  }
+  .assignment-header {
+    padding: 30px 36px;
+    background: rgba(0,229,255,0.05);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .assignment-icon {
+    font-size: 40px;
+    filter: drop-shadow(0 0 12px rgba(0,229,255,0.5));
+  }
+  .assignment-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+  .assignment-header p {
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+  .assignment-body { padding: 36px; }
+
+  .scenario-box {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-left: 4px solid var(--accent3);
+    padding: 20px 22px;
+    margin-bottom: 30px;
+  }
+  .scenario-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent3);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .scenario-text { font-size: 16px; color: var(--text); line-height: 1.7; }
+
+  .devoir-q {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+  }
+  .dq-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .dq-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .dq-options { display: flex; flex-direction: column; gap: 8px; }
+  .dq-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .dq-opt:hover { border-color: rgba(0,229,255,0.4); background: rgba(0,229,255,0.05); }
+  .dq-opt.selected { border-color: var(--accent); background: rgba(0,229,255,0.08); color: var(--white); }
+  .dq-opt.correct { border-color: var(--accent2)!important; background: rgba(0,255,136,0.12)!important; color: var(--accent2)!important; }
+  .dq-opt.wrong { border-color: var(--danger)!important; background: rgba(255,61,90,0.1)!important; color: var(--danger)!important; }
+  .dq-letter { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text3); min-width: 20px; }
+  .dq-opt.correct .dq-letter { color: var(--accent2); }
+  .dq-opt.wrong .dq-letter { color: var(--danger); }
+
+  .dq-explanation {
+    margin-top: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: 'Share Tech Mono', monospace;
+    display: none;
+    background: rgba(0,0,0,0.3);
+  }
+  .dq-explanation.show { display: block; }
+  .dq-explanation.ok { color: var(--accent2); border-left: 3px solid var(--accent2); }
+  .dq-explanation.fail { color: #ff8fa0; border-left: 3px solid var(--danger); }
+
+  .submit-zone {
+    text-align: center;
+    padding: 30px 0 10px;
+    border-top: 1px dashed var(--border);
+    margin-top: 30px;
+  }
+  .btn-submit {
+    padding: 14px 48px;
+    background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(0,255,136,0.1));
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+  }
+  .btn-submit:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: var(--glow);
+  }
+  .btn-reset {
+    display: none;
+    padding: 10px 30px;
+    background: transparent;
+    border: 1px solid var(--text3);
+    color: var(--text3);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-left: 14px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { border-color: var(--text2); color: var(--text2); }
+
+  .result-panel {
+    display: none;
+    margin-top: 30px;
+    padding: 30px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .result-panel.show { display: block; }
+  .result-score {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .result-score.excellent { color: var(--accent2); text-shadow: 0 0 30px rgba(0,255,136,0.5); }
+  .result-score.good { color: var(--accent); text-shadow: 0 0 30px rgba(0,229,255,0.5); }
+  .result-score.fail { color: var(--danger); text-shadow: 0 0 30px rgba(255,61,90,0.5); }
+  .result-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .result-sub { font-size: 14px; color: var(--text2); max-width: 480px; margin: 0 auto 20px; }
+  .result-bar-wrap {
+    max-width: 400px;
+    margin: 20px auto;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .result-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .result-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .rb-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    background: rgba(0,229,255,0.06);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent);
+  }
+  .rb-item.g { color: var(--accent2); background: rgba(0,255,136,0.06); border-color: rgba(0,255,136,0.2); }
+  .rb-item.r { color: var(--danger); background: rgba(255,61,90,0.06); border-color: rgba(255,61,90,0.2); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 30px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+    letter-spacing: 2px;
+  }
+
+  @media(max-width: 640px) {
+    .hero { padding: 40px 20px; }
+    .lesson-header { padding: 16px 16px 12px 20px; gap: 10px; }
+    .lesson-body { padding: 0 16px 20px 20px; }
+    .assignment-header { flex-direction: column; padding: 24px; }
+    .assignment-body { padding: 24px; }
+  }
+
+  /* Animations */
+  .lesson { animation: fadeSlide 0.4s ease backwards; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .lesson:nth-child(1) { animation-delay: 0.05s; }
+  .lesson:nth-child(2) { animation-delay: 0.1s; }
+  .lesson:nth-child(3) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">MODULE COMPLET</div>
+  <h1>Sécurité <span>Informatique</span><br>& Cloud AWS</h1>
+  <p>Résumé des concepts clés, QCM par cours et devoir interactif final</p>
+  <div class="hero-stats">
+    <div class="stat"><span>COURS</span>18</div>
+    <div class="stat"><span>CONCEPTS CLÉS</span>80+</div>
+    <div class="stat"><span>QUESTIONS QCM</span>54</div>
+    <div class="stat"><span>DEVOIR FINAL</span>15 Q</div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar">
+  <span>PROGRESSION QCM</span>
+  <div class="progress-track"><div class="progress-fill" id="global-progress"></div></div>
+  <span id="progress-label">0%</span>
+</div>
+
+<!-- NAV -->
+<div class="nav-section" id="nav">
+  <button class="nav-pill" onclick="scrollToPhase('intro')">Intro</button>
+  <button class="nav-pill" onclick="scrollToPhase('prevention')">Prévention</button>
+  <button class="nav-pill" onclick="scrollToPhase('detection')">Détection</button>
+  <button class="nav-pill" onclick="scrollToPhase('reponse')">Réponse</button>
+  <button class="nav-pill" onclick="scrollToPhase('analyse')">Analyse</button>
+  <button class="nav-pill" onclick="scrollToPhase('best')">Bonnes pratiques</button>
+  <button class="nav-pill" onclick="scrollToPhase('devoir')">Devoir Final</button>
+</div>
+
+<div class="main">
+
+<!-- ============================================================ -->
+<!--  INTRODUCTION                                                 -->
+<!-- ============================================================ -->
+<div id="intro">
+<div class="phase-divider"><div class="phase-label">INTRODUCTION</div></div>
+
+<!-- COURS 1 -->
+<div class="lesson open" data-lesson="1">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">01</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag intro">Fondamentaux</div>
+      <h2>Introduction à la sécurité</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">La Triade CIA</div>
+        <p>Le pilier fondamental de toute politique de sécurité repose sur trois propriétés essentielles :</p>
+        <ul>
+          <li><strong>Confidentialité</strong> — protéger l'information contre tout accès non autorisé (chiffrement, contrôle d'accès)</li>
+          <li><strong>Intégrité</strong> — garantir que les données ne sont pas altérées de manière non autorisée (hachage, signatures)</li>
+          <li><strong>Disponibilité</strong> — s'assurer que les systèmes et données sont accessibles quand nécessaire (redondance, sauvegardes)</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Types de menaces</div>
+        <ul>
+          <li><strong>Menaces internes</strong> — employés malveillants, erreurs humaines involontaires</li>
+          <li><strong>Menaces externes</strong> — hackers, organisations criminelles, États nations</li>
+          <li><strong>Malwares</strong> — virus, ransomware, spyware, rootkits</li>
+          <li><strong>Ingénierie sociale</strong> — phishing, pretexting, manipulation psychologique</li>
+          <li><strong>Attaques réseau</strong> — DDoS, MITM (Man-in-the-Middle), injection SQL</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Principes de sécurité fondamentaux</div>
+        <ul>
+          <li><strong>Moindre privilège</strong> — accorder uniquement les droits strictement nécessaires</li>
+          <li><strong>Défense en profondeur</strong> — plusieurs couches de sécurité complémentaires</li>
+          <li><strong>Séparation des tâches</strong> — diviser les responsabilités critiques</li>
+          <li><strong>Fail-Safe Defaults</strong> — refus par défaut, autorisation explicite requise</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box">⚡ RETENIR : CIA = Confidentialité + Intégrité + Disponibilité. Tout incident de sécurité viole au moins un de ces trois piliers.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 1 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Quel pilier de la triade CIA est violé si un ransomware chiffre vos fichiers et les rend inaccessibles ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Confidentialité uniquement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Disponibilité (et potentiellement intégrité)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Intégrité uniquement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Aucun des trois</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Le principe du "moindre privilège" signifie :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Donner tous les droits aux administrateurs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Interdire tout accès par défaut</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Accorder uniquement les droits strictement nécessaires à chaque utilisateur</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Utiliser le chiffrement pour toutes les données</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Parmi les menaces suivantes, laquelle est une menace "interne" ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un employé mécontent qui exfiltre des données</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Une attaque DDoS depuis l'extérieur</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un phishing ciblant les emails</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Une injection SQL sur le site web</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 2 -->
+<div class="lesson" data-lesson="2">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">02</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag intro">Politique</div>
+      <h2>Exemple de politique d'utilisation acceptable</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Définition d'une AUP</div>
+        <p>Une <strong>Politique d'Utilisation Acceptable (AUP – Acceptable Use Policy)</strong> est un document formel qui définit les règles et conditions d'utilisation des ressources informatiques d'une organisation. Elle protège légalement l'entreprise et sensibilise les utilisateurs.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Composantes clés d'une AUP</div>
+        <ul>
+          <li><strong>Portée</strong> — qui est concerné (employés, contractants, visiteurs)</li>
+          <li><strong>Usages autorisés</strong> — activités professionnelles légitimes</li>
+          <li><strong>Usages interdits</strong> — téléchargements illicites, partage de mots de passe, usage personnel excessif</li>
+          <li><strong>Propriété des données</strong> — clarifier que les données appartiennent à l'entreprise</li>
+          <li><strong>Surveillance</strong> — droit de l'entreprise à auditer les activités</li>
+          <li><strong>Sanctions</strong> — conséquences en cas de violation</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Importance et implémentation</div>
+        <ul>
+          <li>Doit être <strong>signée</strong> par tous les utilisateurs (preuve d'acceptation)</li>
+          <li>Révisée <strong>périodiquement</strong> (au moins annuellement)</li>
+          <li>Associée à une <strong>formation de sensibilisation</strong></li>
+          <li>Rédigée en <strong>langage clair et accessible</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box g">✔ Une bonne AUP n'est pas uniquement technique : elle est aussi juridique, RH et éducative. C'est le contrat social de la cybersécurité.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 2 ──</div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q1. Quel est l'objectif principal d'une politique d'utilisation acceptable (AUP) ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Bloquer tous les accès internet</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Remplacer les antivirus</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Gérer les licences logicielles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Définir les règles d'usage des ressources IT et protéger l'organisation</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q2. Parmi ces éléments, lequel NE fait PAS typiquement partie d'une AUP ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Les usages interdits des ressources IT</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> La configuration technique du pare-feu</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Les sanctions applicables en cas de violation</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> La portée et les personnes concernées</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q3. À quelle fréquence une AUP doit-elle au minimum être révisée ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Tous les 5 ans</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Uniquement lors d'incidents</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Au moins annuellement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Tous les 10 ans</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end intro -->
+
+<!-- ============================================================ -->
+<!--  PRÉVENTION                                                   -->
+<!-- ============================================================ -->
+<div id="prevention">
+<div class="phase-divider"><div class="phase-label prev">PHASE 1 — PRÉVENTION</div></div>
+
+<!-- COURS 3 -->
+<div class="lesson prev" data-lesson="3">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">03</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">Cycle de vie</div>
+      <h2>Cycle de vie de la sécurité : prévention</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Le cycle de vie de la sécurité</div>
+        <p>La sécurité est un processus continu organisé en 4 phases complémentaires :</p>
+        <ul>
+          <li>🛡️ <strong>Prévention</strong> — empêcher les incidents avant qu'ils surviennent</li>
+          <li>🔍 <strong>Détection</strong> — identifier les incidents en cours ou passés</li>
+          <li>⚡ <strong>Réponse</strong> — contenir et neutraliser les incidents</li>
+          <li>📊 <strong>Analyse</strong> — apprendre et améliorer les défenses</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">La prévention : mesures clés</div>
+        <ul>
+          <li><strong>Renforcement (hardening)</strong> du réseau et des systèmes</li>
+          <li><strong>Sécurité des données</strong> — chiffrement, classification</li>
+          <li><strong>PKI</strong> — infrastructure de clé publique</li>
+          <li><strong>Gestion des identités</strong> — IAM, authentification forte</li>
+          <li><strong>Formation des utilisateurs</strong> — réduire le vecteur humain</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title y">Gestion des risques</div>
+        <ul>
+          <li><strong>Identification</strong> des actifs et vulnérabilités</li>
+          <li><strong>Évaluation</strong> : Risque = Probabilité × Impact</li>
+          <li><strong>Traitement</strong> : accepter, éviter, transférer, atténuer</li>
+          <li><strong>Surveillance continue</strong> des nouveaux risques</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box g">🔄 La prévention est la phase la moins coûteuse. Chaque euro investi en prévention économise en moyenne 10 euros en réponse aux incidents.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 3 ──</div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q1. Dans quel ordre logique se déroulent les phases du cycle de vie de la sécurité ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Prévention → Détection → Réponse → Analyse</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Détection → Prévention → Analyse → Réponse</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Réponse → Prévention → Détection → Analyse</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Analyse → Détection → Réponse → Prévention</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. La formule du risque en sécurité est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Risque = Menace + Vulnérabilité</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Risque = Impact / Probabilité</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Risque = Probabilité × Impact</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Risque = Coût × Fréquence</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q3. Parmi les stratégies de traitement du risque, "souscrire une cyberassurance" correspond à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Accepter le risque</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Transférer le risque</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Éviter le risque</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Atténuer le risque</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 4 -->
+<div class="lesson prev" data-lesson="4">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">04</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">Réseau</div>
+      <h2>Prévention liée au renforcement du réseau</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Pare-feu (Firewall)</div>
+        <p>Dispositif filtrant le trafic réseau selon des règles prédéfinies. Types :</p>
+        <ul>
+          <li><strong>Filtrage de paquets</strong> — analyse les en-têtes IP/TCP/UDP (couche 3-4)</li>
+          <li><strong>Inspection avec état (Stateful)</strong> — suit l'état des connexions</li>
+          <li><strong>Pare-feu applicatif (WAF)</strong> — analyse le contenu applicatif (couche 7)</li>
+          <li><strong>NGFW</strong> — Next-Gen Firewall, combine DPI + IPS + contrôle d'application</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Segmentation réseau</div>
+        <ul>
+          <li><strong>DMZ (Zone Démilitarisée)</strong> — zone tampon entre internet et le réseau interne</li>
+          <li><strong>VLAN</strong> — isolation logique des segments réseau</li>
+          <li><strong>Zero Trust Network</strong> — "ne jamais faire confiance, toujours vérifier"</li>
+          <li><strong>Micro-segmentation</strong> — isolation granulaire des charges de travail</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Autres outils de protection réseau</div>
+        <ul>
+          <li><strong>IDS/IPS</strong> — détection/prévention d'intrusion (Snort, Suricata)</li>
+          <li><strong>VPN</strong> — chiffrement des communications distantes</li>
+          <li><strong>NAC</strong> — contrôle d'accès réseau (vérification de conformité)</li>
+          <li><strong>Proxy</strong> — filtrage et cache du trafic web</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box">🌐 Segmenter = limiter la propagation. Si un attaquant pénètre un segment, la segmentation l'empêche d'accéder à tout le réseau.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 4 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Qu'est-ce qu'une DMZ en sécurité réseau ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un type de chiffrement symétrique</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Une zone tampon entre internet et le réseau interne sécurisé</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un protocole de gestion des accès</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Un outil de détection d'intrusion</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q2. Quelle est la différence entre un IDS et un IPS ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> IDS chiffre, IPS déchiffre</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> IDS est matériel, IPS est logiciel</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> IPS surveille, IDS bloque</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> IDS détecte et alerte, IPS détecte et bloque activement</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Le principe Zero Trust affirme que :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Aucun utilisateur ou dispositif n'est automatiquement de confiance, même à l'intérieur du réseau</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Les utilisateurs internes sont toujours de confiance</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> On ne doit utiliser aucun chiffrement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Les pare-feu sont inutiles</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 5 -->
+<div class="lesson prev" data-lesson="5">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">05</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">Systèmes</div>
+      <h2>Prévention liée au renforcement des systèmes</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Hardening des systèmes</div>
+        <p>Le <strong>renforcement (hardening)</strong> vise à réduire la surface d'attaque d'un système en le configurant de façon sécurisée :</p>
+        <ul>
+          <li>Désactiver les <strong>services inutiles</strong> (réduction de la surface d'attaque)</li>
+          <li>Supprimer les <strong>comptes par défaut</strong> ou changer leurs mots de passe</li>
+          <li>Appliquer le <strong>principe du moindre privilège</strong> sur tous les comptes</li>
+          <li>Fermer les <strong>ports réseau inutilisés</strong></li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Gestion des correctifs (Patch Management)</div>
+        <ul>
+          <li><strong>Inventaire</strong> — recenser tous les logiciels et systèmes</li>
+          <li><strong>Évaluation</strong> — prioriser par score CVSS (vulnérabilité critique vs. faible)</li>
+          <li><strong>Test</strong> — valider en environnement de pré-production</li>
+          <li><strong>Déploiement</strong> — automatisation via WSUS, SCCM, Ansible</li>
+          <li><strong>Vérification</strong> — confirmer l'application des correctifs</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title y">Antivirus et EDR</div>
+        <ul>
+          <li><strong>Antivirus traditionnel</strong> — détection par signatures de malwares connus</li>
+          <li><strong>EDR (Endpoint Detection & Response)</strong> — détection comportementale, investigation et réponse</li>
+          <li><strong>Listes blanches applicatives</strong> — n'autoriser que les applications approuvées</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box o">🔧 Référentiels de hardening : CIS Benchmarks (Center for Internet Security) — guides de configuration sécurisée pour OS, applications et cloud.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 5 ──</div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q1. Le "hardening" d'un système consiste à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Installer un antivirus premium</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Chiffrer tous les disques durs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Réduire la surface d'attaque en désactivant services, comptes et ports inutiles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Mettre en place un VPN obligatoire</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q2. Le score CVSS sert à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Mesurer la vitesse d'un réseau</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Évaluer la sévérité des vulnérabilités pour prioriser les correctifs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Gérer les licences antivirus</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Configurer les pare-feu</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q3. Quelle est la principale différence entre un antivirus traditionnel et un EDR ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> L'EDR est gratuit, l'antivirus est payant</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> L'antivirus est cloud, l'EDR est local</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> L'EDR ne protège que les serveurs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> L'antivirus utilise des signatures, l'EDR utilise l'analyse comportementale et permet la réponse active</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 6 -->
+<div class="lesson prev" data-lesson="6">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">06</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">Données</div>
+      <h2>Prévention liée à la sécurité des données</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Classification des données</div>
+        <ul>
+          <li><strong>Public</strong> — information librement accessible</li>
+          <li><strong>Interne</strong> — usage interne uniquement</li>
+          <li><strong>Confidentiel</strong> — accès restreint à certains groupes</li>
+          <li><strong>Secret/Critique</strong> — données les plus sensibles (IP, secrets médicaux)</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Chiffrement</div>
+        <ul>
+          <li><strong>Chiffrement symétrique</strong> — même clé pour chiffrer/déchiffrer (AES-256, rapide)</li>
+          <li><strong>Chiffrement asymétrique</strong> — paire clé publique/privée (RSA, plus lent)</li>
+          <li><strong>Chiffrement au repos</strong> — données stockées protégées (BitLocker, AWS KMS)</li>
+          <li><strong>Chiffrement en transit</strong> — données en mouvement (TLS/HTTPS, VPN)</li>
+          <li><strong>Chiffrement de bout en bout</strong> — seuls expéditeur et destinataire lisent</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">DLP et sauvegarde</div>
+        <ul>
+          <li><strong>DLP (Data Loss Prevention)</strong> — surveiller et empêcher les fuites de données</li>
+          <li><strong>Règle 3-2-1</strong> — 3 copies, 2 supports différents, 1 hors site</li>
+          <li><strong>Sauvegarde immuable</strong> — protégée contre les ransomwares</li>
+          <li><strong>Hachage (SHA-256, MD5)</strong> — vérifier l'intégrité des données</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box g">🔑 AES-256 est le standard de facto pour le chiffrement symétrique. TLS 1.3 est le standard actuel pour sécuriser les communications réseau.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 6 ──</div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q1. La règle de sauvegarde 3-2-1 signifie :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> 3 copies, 2 supports différents, 1 copie hors site</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> 3 sauvegardes par jour, 2 par semaine, 1 par mois</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> 3 niveaux de chiffrement, 2 clés, 1 coffre-fort</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> 3 administrateurs, 2 approbations, 1 ticket</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Le chiffrement asymétrique utilise :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> La même clé pour chiffrer et déchiffrer</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Un code PIN à 6 chiffres</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Une paire de clés : clé publique (chiffrement) et clé privée (déchiffrement)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Un algorithme de hachage</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q3. La solution DLP sert principalement à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Accélérer les sauvegardes</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Surveiller et prévenir les fuites de données sensibles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Gérer les licences logicielles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Chiffrer les emails automatiquement</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 7 -->
+<div class="lesson prev" data-lesson="7">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">07</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">PKI</div>
+      <h2>Prévention liée à l'infrastructure à clé publique (PKI)</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Qu'est-ce que la PKI ?</div>
+        <p>La <strong>PKI (Public Key Infrastructure)</strong> est un ensemble de politiques, processus et technologies permettant de gérer les certificats numériques et les paires de clés cryptographiques. Elle fonde la confiance numérique.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Composantes de la PKI</div>
+        <ul>
+          <li><strong>CA (Certificate Authority)</strong> — autorité de certification qui émet et signe les certificats (Let's Encrypt, DigiCert)</li>
+          <li><strong>RA (Registration Authority)</strong> — vérifie l'identité avant émission de certificat</li>
+          <li><strong>Certificat X.509</strong> — standard de certificat numérique contenant clé publique + identité</li>
+          <li><strong>CRL (Certificate Revocation List)</strong> — liste des certificats révoqués</li>
+          <li><strong>OCSP</strong> — vérification en temps réel de la validité d'un certificat</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Usages de la PKI</div>
+        <ul>
+          <li><strong>HTTPS/TLS</strong> — sécurisation des sites web</li>
+          <li><strong>Signature numérique</strong> — authenticité et non-répudiation des documents</li>
+          <li><strong>S/MIME</strong> — chiffrement et signature des emails</li>
+          <li><strong>VPN certificats</strong> — authentification sans mot de passe</li>
+          <li><strong>Code signing</strong> — vérification de l'intégrité des logiciels</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box y">🔐 Chaîne de confiance PKI : Root CA → Intermediate CA → Certificat final. Si le Root CA est compromis, toute la chaîne l'est.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 7 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Quel est le rôle d'une autorité de certification (CA) dans la PKI ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Stocker les mots de passe des utilisateurs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Émettre et signer des certificats numériques en garantissant l'identité du titulaire</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Gérer les pare-feu de l'organisation</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Chiffrer le trafic réseau</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Une CRL (Certificate Revocation List) est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Une liste des utilisateurs autorisés</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Un protocole de chiffrement symétrique</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Une liste des certificats numériques révoqués avant leur date d'expiration</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Un registre des clés privées</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Le standard de certificat numérique utilisé dans la PKI est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> X.509</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> SHA-256</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> AES-128</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> OAuth 2.0</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 8 -->
+<div class="lesson prev" data-lesson="8">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">08</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag prev">Identité</div>
+      <h2>Prévention liée à la gestion des identités</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">AAA : Authentification, Autorisation, Audit</div>
+        <ul>
+          <li><strong>Authentification</strong> — vérifier que vous êtes bien qui vous prétendez être</li>
+          <li><strong>Autorisation</strong> — définir ce que vous avez le droit de faire</li>
+          <li><strong>Audit (Accounting)</strong> — tracer ce que vous avez fait</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Facteurs d'authentification</div>
+        <ul>
+          <li>🔑 <strong>Facteur 1 – Connaissance</strong> — mot de passe, PIN, question secrète</li>
+          <li>📱 <strong>Facteur 2 – Possession</strong> — token, smartphone, carte à puce</li>
+          <li>👁️ <strong>Facteur 3 – Inhérence</strong> — empreinte digitale, reconnaissance faciale</li>
+          <li>🌍 <strong>Facteur 4 – Localisation</strong> — géolocalisation, IP réseau</li>
+          <li><strong>MFA</strong> — combinaison de 2+ facteurs = authentification multifacteur</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">SSO et fédération d'identité</div>
+        <ul>
+          <li><strong>SSO (Single Sign-On)</strong> — une seule authentification pour plusieurs services</li>
+          <li><strong>LDAP / Active Directory</strong> — annuaire centralisé des identités</li>
+          <li><strong>SAML 2.0</strong> — protocole de fédération d'identité (XML)</li>
+          <li><strong>OAuth 2.0 / OIDC</strong> — autorisation et authentification modernes (web/API)</li>
+          <li><strong>PAM (Privileged Access Management)</strong> — gestion des comptes à privilèges</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box">👤 Le vol d'identifiants est le vecteur d'attaque n°1. Le MFA bloque 99% des attaques automatisées sur les comptes.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 8 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. L'authentification multifacteur (MFA) requiert :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un seul facteur très complexe</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Au moins deux facteurs d'authentification de natures différentes</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Uniquement la biométrie</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Trois mots de passe distincts</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Le SSO (Single Sign-On) permet de :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Bloquer les connexions non autorisées</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Stocker les mots de passe de façon sécurisée</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> S'authentifier une seule fois pour accéder à plusieurs applications</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Chiffrer les communications réseau</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Utiliser une empreinte digitale pour s'authentifier correspond à quel type de facteur ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Inhérence (ce que vous êtes)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Possession (ce que vous avez)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Connaissance (ce que vous savez)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Localisation (où vous êtes)</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 9 -->
+<div class="lesson prev" data-lesson="9">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">09</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS IAM</div>
+      <h2>Prévention liée à AWS IAM</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">AWS IAM – Identity and Access Management</div>
+        <p><strong>AWS IAM</strong> est le service de contrôle d'accès d'AWS permettant de gérer finement qui peut accéder à quelles ressources AWS et sous quelles conditions. Il est gratuit et global (pas limité à une région).</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Entités IAM</div>
+        <ul>
+          <li><strong>Utilisateur IAM</strong> — identité individuelle avec credentials permanents (accès console + API)</li>
+          <li><strong>Groupe IAM</strong> — collection d'utilisateurs partageant des politiques</li>
+          <li><strong>Rôle IAM</strong> — identité temporaire assumée par services/utilisateurs (pas de mot de passe)</li>
+          <li><strong>Compte root</strong> — accès total, à protéger absolument et ne jamais utiliser au quotidien</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Politiques IAM</div>
+        <ul>
+          <li><strong>Politique gérée par AWS</strong> — précréées par AWS (ex: AdministratorAccess)</li>
+          <li><strong>Politique gérée par client</strong> — créées et maintenues par l'entreprise</li>
+          <li><strong>Politique en ligne</strong> — attachée directement à une entité</li>
+          <li><strong>Structure</strong> — Effect (Allow/Deny) + Action + Resource + Condition</li>
+          <li><strong>Deny explicite</strong> — toujours prioritaire sur Allow</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title y">Bonnes pratiques IAM AWS</div>
+        <ul>
+          <li>Activer le <strong>MFA sur le compte root</strong></li>
+          <li>Utiliser des <strong>rôles IAM</strong> plutôt que des credentials d'utilisateurs</li>
+          <li>Appliquer le <strong>principe du moindre privilège</strong></li>
+          <li>Faire <strong>tourner les clés d'accès</strong> régulièrement</li>
+          <li>Utiliser <strong>AWS Organizations + SCP</strong> pour les environnements multi-comptes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box y">☁️ Dans IAM, tout est refusé par défaut. Un "Deny explicite" l'emporte toujours sur un "Allow". Utilisez toujours les rôles plutôt que des clés d'accès longues durée.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 9 ──</div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q1. Dans AWS IAM, quelle entité est recommandée pour accorder des permissions temporaires à un service AWS (comme EC2) ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un utilisateur IAM dédié</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Le compte root AWS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un groupe IAM avec accès complet</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Un rôle IAM avec les permissions minimales nécessaires</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q2. Dans une politique IAM, que se passe-t-il si un Deny explicite et un Allow s'appliquent tous les deux à une action ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Le Deny gagne toujours — l'accès est refusé</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Le Allow gagne car il est plus récent</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Les deux s'annulent — accès incertain</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> L'administrateur doit choisir manuellement</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q3. Quelle action est critique pour sécuriser le compte root AWS ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Créer plusieurs utilisateurs root</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Partager les credentials root avec l'équipe admin</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Activer le MFA et ne jamais utiliser root pour les tâches quotidiennes</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Désactiver le compte root après la configuration initiale</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end prevention -->
+
+<!-- ============================================================ -->
+<!--  DÉTECTION                                                    -->
+<!-- ============================================================ -->
+<div id="detection">
+<div class="phase-divider"><div class="phase-label detect">PHASE 2 — DÉTECTION</div></div>
+
+<!-- COURS 10 -->
+<div class="lesson detect" data-lesson="10">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">10</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag detect">Surveillance</div>
+      <h2>Détection</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title y">La détection : principe et objectifs</div>
+        <p>La détection vise à <strong>identifier les incidents de sécurité</strong> le plus tôt possible. Le temps entre compromission et détection (MTTD – Mean Time To Detect) est un indicateur clé : plus il est court, moins les dommages sont importants.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Outils de détection</div>
+        <ul>
+          <li><strong>SIEM (Security Information and Event Management)</strong> — centralise et corrèle les logs pour détecter des patterns d'attaque (Splunk, IBM QRadar)</li>
+          <li><strong>SOC (Security Operations Center)</strong> — équipe dédiée à la surveillance 24/7</li>
+          <li><strong>Honeypot</strong> — système leurre pour détecter les attaquants</li>
+          <li><strong>UEBA</strong> — analyse comportementale des utilisateurs et entités</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Surveillance et logs</div>
+        <ul>
+          <li><strong>Logs système</strong> — événements OS (connexions, modifications de fichiers)</li>
+          <li><strong>Logs applicatifs</strong> — erreurs, accès, transactions</li>
+          <li><strong>Logs réseau</strong> — flux, connexions, DNS</li>
+          <li><strong>SIEM</strong> — corrélation automatique des logs pour alertes</li>
+          <li><strong>Threat Intelligence</strong> — intégration de flux IoC (Indicators of Compromise)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box y">🔍 Indicateurs de compromission (IoC) : adresses IP malveillantes, hachages de malwares, noms de domaine suspects. Ils permettent de détecter des attaques connues.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 10 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Que signifie MTTD en cybersécurité ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Maximum Time To Deploy</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Mean Time To Detect (temps moyen de détection d'un incident)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Minimum Threshold for Threat Detection</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Multi-Tenant Threat Defense</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Un SIEM sert principalement à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Chiffrer les communications réseau</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Gérer les identités et les accès</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Centraliser et corréler les logs pour détecter des incidents de sécurité</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Sauvegarder les données critiques</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Un honeypot est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un système leurre conçu pour attirer et détecter les attaquants</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Un type de pare-feu nouvelle génération</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un algorithme de chiffrement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Une base de données de vulnérabilités connues</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 11 -->
+<div class="lesson detect" data-lesson="11">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">11</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS</div>
+      <h2>AWS CloudTrail</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title y">Qu'est-ce qu'AWS CloudTrail ?</div>
+        <p>AWS CloudTrail est un service qui <strong>enregistre toutes les actions API</strong> effectuées dans un compte AWS. Il répond à la question : <em>"Qui a fait quoi, où et quand sur mon infrastructure AWS ?"</em></p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Fonctionnalités clés</div>
+        <ul>
+          <li><strong>Event history</strong> — historique des 90 derniers jours sans configuration</li>
+          <li><strong>Trail</strong> — configuration pour enregistrer les événements dans S3 (durée illimitée)</li>
+          <li><strong>Management Events</strong> — actions sur les ressources (créer EC2, IAM, etc.)</li>
+          <li><strong>Data Events</strong> — opérations sur les données (lecture/écriture S3, Lambda)</li>
+          <li><strong>Insight Events</strong> — détection d'activités inhabituelles via ML</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Intégrations CloudTrail</div>
+        <ul>
+          <li><strong>CloudWatch Logs</strong> — alertes en temps réel sur les événements critiques</li>
+          <li><strong>S3</strong> — stockage longue durée des logs CloudTrail</li>
+          <li><strong>AWS Athena</strong> — analyse SQL des logs CloudTrail stockés dans S3</li>
+          <li><strong>AWS Config</strong> — audit de conformité combiné avec CloudTrail</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box y">📋 CloudTrail est le journal d'audit AWS. Activer un Trail multi-régions vers S3 avec validation d'intégrité et chiffrement KMS est une bonne pratique fondamentale.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 11 ──</div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q1. AWS CloudTrail permet principalement de :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Gérer les mises à jour automatiques des instances EC2</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Surveiller les performances CPU/RAM des services AWS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Enregistrer toutes les actions API effectuées dans un compte AWS pour l'audit</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Déployer des applications serverless</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q2. Par défaut, CloudTrail conserve l'historique des événements pendant :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> 30 jours</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> 90 jours</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> 1 an</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Indéfiniment</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q3. Pour une rétention illimitée des logs CloudTrail, quelle configuration est nécessaire ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Activer CloudWatch</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Utiliser AWS Config</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Contacter le support AWS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Créer un Trail et envoyer les logs vers un bucket S3</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 12 -->
+<div class="lesson detect" data-lesson="12">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">12</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS</div>
+      <h2>AWS Config</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title y">AWS Config : conformité de configuration</div>
+        <p>AWS Config enregistre et évalue en continu les <strong>configurations des ressources AWS</strong>. Il répond à : <em>"Mes ressources AWS sont-elles configurées conformément à mes règles de sécurité ?"</em></p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Fonctionnalités principales</div>
+        <ul>
+          <li><strong>Inventaire continu</strong> — liste de toutes les ressources et leur configuration actuelle</li>
+          <li><strong>Historique de configuration</strong> — timeline des changements de config</li>
+          <li><strong>Règles Config</strong> — évaluation automatique de la conformité</li>
+          <li><strong>Règles gérées AWS</strong> — ex: s3-bucket-public-read-prohibited, mfa-enabled-for-iam-console-access</li>
+          <li><strong>Remédiation automatique</strong> — déclencher des actions correctives via SSM Automation</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Différences CloudTrail vs Config</div>
+        <ul>
+          <li><strong>CloudTrail</strong> → "Qui a fait cette action API et quand ?" (journal d'activité)</li>
+          <li><strong>AWS Config</strong> → "Comment est configurée ma ressource, est-elle conforme ?" (état)</li>
+          <li>Les deux sont complémentaires : Config pour la conformité, CloudTrail pour l'audit d'actions</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box g">⚙️ AWS Config Conformance Packs = ensembles de règles Config alignés sur des frameworks (PCI-DSS, HIPAA, CIS AWS). Idéal pour les audits de conformité.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 12 ──</div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q1. Quelle est la principale différence entre AWS Config et AWS CloudTrail ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Config surveille les configurations/conformité, CloudTrail enregistre les actions API</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Config est gratuit, CloudTrail est payant</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Config fonctionne pour IAM uniquement, CloudTrail pour tout AWS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> CloudTrail surveille S3 uniquement</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Une règle AWS Config "s3-bucket-public-read-prohibited" sert à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Chiffrer automatiquement tous les buckets S3</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Supprimer les buckets S3 non utilisés</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Détecter les buckets S3 accessibles publiquement en lecture et les signaler comme non conformes</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Bloquer les uploads vers S3</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q3. Qu'est-ce qu'un "Conformance Pack" dans AWS Config ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un pack de mises à jour de sécurité AWS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Un ensemble de règles Config alignées sur un framework de conformité (PCI-DSS, CIS, HIPAA)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un abonnement au support AWS Enterprise</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Une liste de ressources AWS autorisées dans un compte</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end detection -->
+
+<!-- ============================================================ -->
+<!--  RÉPONSE                                                      -->
+<!-- ============================================================ -->
+<div id="reponse">
+<div class="phase-divider"><div class="phase-label resp">PHASE 3 — RÉPONSE</div></div>
+
+<!-- COURS 13 -->
+<div class="lesson resp" data-lesson="13">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">13</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag resp">Incident</div>
+      <h2>Réponse aux incidents</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title o">Plan de réponse aux incidents (IRP)</div>
+        <p>Un plan documenté définissant les procédures à suivre lors d'un incident de sécurité. Il doit être testé régulièrement (exercices tabletop, red team).</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Les 6 phases de réponse (NIST)</div>
+        <ul>
+          <li><strong>1. Préparation</strong> — former l'équipe, documenter les procédures, préparer les outils</li>
+          <li><strong>2. Identification</strong> — détecter et confirmer l'incident (qu'est-ce qui se passe ?)</li>
+          <li><strong>3. Confinement</strong> — isoler le système compromis pour limiter la propagation</li>
+          <li><strong>4. Éradication</strong> — supprimer la cause racine (malware, compte compromis)</li>
+          <li><strong>5. Récupération</strong> — restaurer les systèmes et valider le retour à la normale</li>
+          <li><strong>6. Leçons apprises</strong> — analyser, documenter, améliorer (post-mortem)</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title y">Notion de forensique numérique</div>
+        <ul>
+          <li><strong>Préservation des preuves</strong> — ne pas modifier l'état du système compromis</li>
+          <li><strong>Chaîne de custody</strong> — documenter la gestion des preuves</li>
+          <li><strong>Image forensique</strong> — copie bit-à-bit du disque (FTK, dd)</li>
+          <li><strong>Analyse de mémoire</strong> — extraction des processus en RAM (Volatility)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box o">⚡ PRIORITÉ lors d'un incident : CONFINER d'abord (isoler le système), ENSUITE éradiquer. Ne jamais éteindre un système compromis sans analyse forensique préalable.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 13 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Selon le framework NIST, quelle est la première phase du processus de réponse aux incidents ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Identification</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Préparation</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Confinement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Éradication</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Lors d'un incident de ransomware sur un serveur, quelle est la première action à prendre ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Payer la rançon immédiatement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Éteindre immédiatement le serveur</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Isoler/confiner le serveur du reste du réseau</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Reformater le disque dur</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q3. La "chaîne de custody" en forensique numérique désigne :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> La liste des administrateurs système</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Le chiffrement des logs d'audit</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> La procédure de restauration des sauvegardes</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> La documentation traçant la collecte, le transfert et la gestion des preuves numériques</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end reponse -->
+
+<!-- ============================================================ -->
+<!--  ANALYSE                                                      -->
+<!-- ============================================================ -->
+<div id="analyse">
+<div class="phase-divider"><div class="phase-label analyse">PHASE 4 — ANALYSE</div></div>
+
+<!-- COURS 14 -->
+<div class="lesson analyse" data-lesson="14">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">14</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag analyse">Post-incident</div>
+      <h2>Analyse</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title p">Analyse post-incident (Post-Mortem)</div>
+        <p>Après tout incident, une analyse approfondie est conduite pour comprendre <strong>comment</strong> l'incident s'est produit et <strong>comment éviter</strong> qu'il se reproduise. Pas de punition — culture d'amélioration continue.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Analyse des causes racines (RCA)</div>
+        <ul>
+          <li><strong>5 Pourquoi</strong> — technique pour trouver la cause fondamentale</li>
+          <li><strong>Diagramme d'Ishikawa</strong> — identifier toutes les causes contributives</li>
+          <li><strong>Timeline de l'attaque</strong> — reconstruire la séquence des événements</li>
+          <li><strong>Kill Chain</strong> — cartographier les étapes de l'attaque (Lockheed Martin)</li>
+          <li><strong>MITRE ATT&CK</strong> — framework de classification des tactiques et techniques d'attaquants</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Tests de sécurité proactifs</div>
+        <ul>
+          <li><strong>Pentest (test de pénétration)</strong> — simulation d'attaque contrôlée par experts</li>
+          <li><strong>Red Team / Blue Team</strong> — attaque vs défense en conditions réelles</li>
+          <li><strong>Scan de vulnérabilités</strong> — identification automatique des failles (Nessus, OpenVAS)</li>
+          <li><strong>Bug Bounty</strong> — programme invitant des chercheurs externes à trouver des failles</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box p">🎯 MITRE ATT&CK est le référentiel mondial des tactiques (pourquoi), techniques (comment) et procédures (détail) des attaquants. Indispensable pour l'analyse d'incidents.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 14 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. La technique des "5 Pourquoi" est utilisée pour :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Évaluer les risques futurs</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Trouver la cause racine d'un incident par questionnement itératif</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Former les équipes à la sécurité</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Configurer les règles de pare-feu</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. MITRE ATT&CK est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un antivirus gouvernemental américain</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Un protocole de chiffrement</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un framework mondial cataloguant les tactiques, techniques et procédures des cyberattaquants</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Une certification de sécurité AWS</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q3. Un programme de Bug Bounty consiste à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Inviter des chercheurs en sécurité externes à trouver des vulnérabilités en échange de récompenses</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Corriger automatiquement les bugs logiciels</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Former les développeurs à coder de façon sécurisée</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Auditer les comptes AWS</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 15 -->
+<div class="lesson analyse" data-lesson="15">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">15</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS</div>
+      <h2>AWS Trusted Advisor</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title p">AWS Trusted Advisor</div>
+        <p>AWS Trusted Advisor est un service qui <strong>inspecte votre environnement AWS</strong> et fournit des recommandations en temps réel selon 5 catégories : sécurité, optimisation des coûts, performance, tolérance aux pannes et limites de service.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Contrôles de sécurité (Trusted Advisor)</div>
+        <ul>
+          <li>🔴 <strong>Ports de sécurité ouverts</strong> — groupes de sécurité avec ports sensibles ouverts (SSH, RDP) à tous</li>
+          <li>🔴 <strong>Compte root sans MFA</strong> — détection de compte root non protégé</li>
+          <li>🟡 <strong>Clés IAM non utilisées</strong> — détection de clés d'accès inactives</li>
+          <li>🟡 <strong>Buckets S3 publics</strong> — signalement des buckets accessibles publiquement</li>
+          <li>🟢 <strong>Rotation des clés</strong> — vérification de la rotation régulière</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Niveaux de support et accès</div>
+        <ul>
+          <li><strong>Gratuit (Basic/Developer)</strong> — 7 contrôles de sécurité de base</li>
+          <li><strong>Business/Enterprise</strong> — accès à tous les contrôles Trusted Advisor + API</li>
+          <li>Notifications par email sur les changements de statut</li>
+          <li>Intégration avec AWS Organizations pour vue multi-comptes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box p">🤖 Trusted Advisor = conseiller automatique AWS. Il combine l'analyse des configurations avec les meilleures pratiques AWS pour identifier proactivement les risques.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 15 ──</div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q1. AWS Trusted Advisor couvre combien de catégories de recommandations ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> 2 (sécurité et coûts)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> 3 (sécurité, performance, disponibilité)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> 4 catégories</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> 5 (sécurité, coûts, performance, tolérance aux pannes, limites de service)</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q2. Un compte AWS avec support Basic peut accéder à Trusted Advisor :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Avec uniquement 7 contrôles de sécurité gratuits</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Avec tous les contrôles disponibles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Trusted Advisor est uniquement disponible avec le support Enterprise</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Seulement pour les contrôles de coûts</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q3. Trusted Advisor signale un groupe de sécurité avec le port 22 (SSH) ouvert à 0.0.0.0/0 comme :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Recommandation de performance</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Bonne configuration</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Alerte de sécurité critique (rouge)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Recommandation d'optimisation des coûts</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end analyse -->
+
+<!-- ============================================================ -->
+<!--  BONNES PRATIQUES + CONFORMITÉ + RESSOURCES                  -->
+<!-- ============================================================ -->
+<div id="best">
+<div class="phase-divider"><div class="phase-label best">BONNES PRATIQUES & CONFORMITÉ AWS</div></div>
+
+<!-- COURS 16 -->
+<div class="lesson best" data-lesson="16">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">16</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag best">Pratiques</div>
+      <h2>Bonnes pratiques de sécurité</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Défense en profondeur</div>
+        <p>Déployer <strong>plusieurs couches de sécurité indépendantes</strong> de sorte que si une couche est contournée, d'autres restent actives. Analogie : château fort avec douves, murailles, gardes et coffres-forts.</p>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Top 10 bonnes pratiques sécurité</div>
+        <ul>
+          <li>✅ Activer <strong>MFA</strong> sur tous les comptes privilégiés</li>
+          <li>✅ Appliquer le <strong>principe du moindre privilège</strong></li>
+          <li>✅ <strong>Patcher</strong> régulièrement tous les systèmes</li>
+          <li>✅ <strong>Chiffrer</strong> les données sensibles au repos et en transit</li>
+          <li>✅ <strong>Sauvegarder</strong> selon la règle 3-2-1</li>
+          <li>✅ Surveiller via <strong>SIEM/SOC</strong> et alertes automatiques</li>
+          <li>✅ Former les utilisateurs à la <strong>sensibilisation</strong> (phishing, ingénierie sociale)</li>
+          <li>✅ Segmenter le réseau (<strong>VLAN, DMZ, Zero Trust</strong>)</li>
+          <li>✅ Tester régulièrement (<strong>pentests, exercices tabletop</strong>)</li>
+          <li>✅ Avoir un <strong>plan de réponse</strong> documenté et testé</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Modèle de maturité cybersécurité</div>
+        <ul>
+          <li><strong>Niveau 1 – Réactif</strong> — sécurité après l'incident</li>
+          <li><strong>Niveau 2 – Répétable</strong> — processus documentés mais informels</li>
+          <li><strong>Niveau 3 – Défini</strong> — politiques formelles et implémentées</li>
+          <li><strong>Niveau 4 – Géré</strong> — métriques et amélioration continue</li>
+          <li><strong>Niveau 5 – Optimisé</strong> — sécurité prédictive et adaptative</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box g">🏆 La sécurité n'est pas un état, c'est un processus. L'objectif est de progresser continuellement dans le modèle de maturité.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 16 ──</div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q1. La "défense en profondeur" consiste à :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Investir massivement dans un seul outil de sécurité très puissant</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Former profondément l'équipe de sécurité</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Déployer plusieurs couches de sécurité indépendantes et complémentaires</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Chiffrer les données avec plusieurs algorithmes simultanément</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q2. Un exercice "tabletop" en cybersécurité est :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Un test de pénétration réel sur les systèmes de production</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Une simulation de réponse à un incident menée en discussion, sans actions techniques réelles</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Un audit de conformité par un organisme externe</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Un outil de scan de vulnérabilités</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q3. Selon le modèle de maturité, une organisation qui utilise des métriques de sécurité et s'améliore continuellement est au niveau :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Niveau 1 – Réactif</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Niveau 2 – Répétable</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Niveau 3 – Défini</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Niveau 4 – Géré</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 17 -->
+<div class="lesson best" data-lesson="17">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">17</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS</div>
+      <h2>Sécurité et conformité AWS</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Modèle de responsabilité partagée AWS</div>
+        <p>AWS et le client partagent la responsabilité de la sécurité :</p>
+        <ul>
+          <li>🏢 <strong>AWS – "Security OF the Cloud"</strong> — infrastructure physique, hyperviseurs, réseau AWS, data centers</li>
+          <li>👤 <strong>Client – "Security IN the Cloud"</strong> — OS, applications, données, IAM, chiffrement, réseau configuré</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Frameworks de conformité AWS</div>
+        <ul>
+          <li><strong>ISO 27001</strong> — management de la sécurité de l'information</li>
+          <li><strong>SOC 1/2/3</strong> — contrôles organisationnels et techniques</li>
+          <li><strong>PCI-DSS</strong> — données de cartes de paiement</li>
+          <li><strong>HIPAA</strong> — données de santé (USA)</li>
+          <li><strong>GDPR</strong> — protection des données personnelles (UE)</li>
+          <li><strong>FedRAMP</strong> — cloud pour administrations américaines</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">AWS Well-Architected Framework – Pilier Sécurité</div>
+        <ul>
+          <li><strong>Identity & Access Management</strong> — qui peut faire quoi</li>
+          <li><strong>Détection</strong> — surveillance et alertes</li>
+          <li><strong>Protection de l'infrastructure</strong> — réseau et compute</li>
+          <li><strong>Protection des données</strong> — classification et chiffrement</li>
+          <li><strong>Réponse aux incidents</strong> — plan et simulation</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box">☁️ RETENIR : AWS est responsable de la sécurité DE l'infrastructure cloud. VOUS êtes responsable de la sécurité DANS le cloud (données, configs, accès).</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 17 ──</div>
+      <div class="qcm-q" data-answer="a">
+        <div class="q-text">Q1. Dans le modèle de responsabilité partagée AWS, qui est responsable du chiffrement des données clients stockées dans S3 ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Le client (Security IN the Cloud)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> AWS (Security OF the Cloud)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Responsabilité partagée 50/50</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Responsabilité automatiquement d'AWS si le bucket est chiffré</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q2. Quel framework de conformité est spécifiquement requis pour le traitement des données de cartes bancaires ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> HIPAA</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> GDPR</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> PCI-DSS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> ISO 9001</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q3. Le AWS Well-Architected Framework – Pilier Sécurité comprend combien de domaines principaux ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> 3 domaines</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> 5 domaines (IAM, Détection, Infrastructure, Données, Réponse)</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> 7 domaines</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> 10 domaines</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COURS 18 -->
+<div class="lesson best" data-lesson="18">
+  <div class="lesson-header" onclick="toggleLesson(this)">
+    <div class="lesson-num">18</div>
+    <div class="lesson-title-block">
+      <div class="lesson-tag aws">AWS</div>
+      <h2>Ressources de sécurité AWS</h2>
+    </div>
+    <div class="lesson-toggle">▾</div>
+  </div>
+  <div class="lesson-body">
+    <div class="concepts">
+      <div class="concept">
+        <div class="concept-title">Services de sécurité AWS dédiés</div>
+        <ul>
+          <li>🛡️ <strong>AWS Shield</strong> — protection DDoS (Standard gratuit, Advanced payant)</li>
+          <li>🔥 <strong>AWS WAF</strong> — pare-feu applicatif web (protection contre SQLi, XSS)</li>
+          <li>🔍 <strong>Amazon GuardDuty</strong> — détection d'intrusion intelligente (ML, analyse VPC Flow Logs)</li>
+          <li>🔐 <strong>AWS KMS</strong> — gestion centralisée des clés de chiffrement</li>
+          <li>🔑 <strong>AWS Secrets Manager</strong> — stockage et rotation automatique des secrets</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title g">Services d'audit et conformité</div>
+        <ul>
+          <li>📋 <strong>AWS Security Hub</strong> — tableau de bord centralisé des alertes de sécurité</li>
+          <li>🕵️ <strong>Amazon Detective</strong> — investigation forensique des incidents (graphes)</li>
+          <li>📊 <strong>AWS Artifact</strong> — accès aux rapports de conformité AWS (SOC, ISO)</li>
+          <li>🌐 <strong>Amazon Macie</strong> — détection automatique de données sensibles dans S3 (PII)</li>
+          <li>🔒 <strong>AWS Certificate Manager (ACM)</strong> — provisioning de certificats SSL/TLS</li>
+        </ul>
+      </div>
+      <div class="concept">
+        <div class="concept-title o">Ressources de formation et documentation</div>
+        <ul>
+          <li><strong>AWS Security Blog</strong> — actualités et meilleures pratiques</li>
+          <li><strong>AWS Documentation</strong> — guides de sécurité par service</li>
+          <li><strong>AWS Well-Architected Tool</strong> — audit guidé de l'architecture</li>
+          <li><strong>AWS re:Inforce</strong> — conférence annuelle dédiée à la sécurité AWS</li>
+          <li><strong>Certifications AWS Security</strong> — AWS Security Specialty</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key-box o">🌟 Amazon GuardDuty + AWS Security Hub + AWS Config = la triade de sécurité AWS recommandée pour une surveillance complète. À activer dans TOUTES les régions.</div>
+    <div class="qcm-section">
+      <div class="qcm-title">── QCM – Cours 18 ──</div>
+      <div class="qcm-q" data-answer="b">
+        <div class="q-text">Q1. Quel service AWS détecte automatiquement les données personnelles (PII) dans les buckets S3 ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> AWS Config</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Amazon Macie</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> AWS CloudTrail</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> AWS Shield</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="d">
+        <div class="q-text">Q2. AWS GuardDuty est un service de :</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> Gestion des certificats SSL</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> Stockage sécurisé des secrets</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> Protection contre les DDoS</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Détection intelligente des menaces via ML (analyse CloudTrail, VPC Flow Logs, DNS)</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+      <div class="qcm-q" data-answer="c">
+        <div class="q-text">Q3. Quel service AWS permet d'accéder aux rapports de conformité officiels d'AWS (SOC 2, ISO 27001) ?</div>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">A.</span> AWS Trusted Advisor</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">B.</span> AWS Security Hub</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">C.</span> AWS Artifact</div>
+          <div class="qcm-opt" onclick="selectOpt(this)"><span class="opt-letter">D.</span> Amazon Detective</div>
+        </div>
+        <button class="q-btn" onclick="validateQ(this)">Valider</button>
+        <div class="q-feedback"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end best -->
+
+<!-- ============================================================ -->
+<!--  DEVOIR FINAL INTERACTIF                                      -->
+<!-- ============================================================ -->
+<div id="devoir">
+<div class="phase-divider"><div class="phase-label" style="border-color:#00e5ff;color:#00e5ff;font-size:13px;letter-spacing:5px;">⬛ DEVOIR FINAL INTERACTIF ⬛</div></div>
+
+<div class="assignment">
+  <div class="assignment-header">
+    <div class="assignment-icon">🛡️</div>
+    <div>
+      <h2>DEVOIR FINAL — Module Sécurité</h2>
+      <p>Scénario réaliste · 15 questions · Couvre l'ensemble du module · Score immédiat avec explications</p>
+    </div>
+  </div>
+  <div class="assignment-body">
+
+    <div class="scenario-box">
+      <div class="scenario-label">📍 SCÉNARIO D'ENTREPRISE</div>
+      <div class="scenario-text">
+        Vous êtes le <strong>responsable cybersécurité</strong> de <strong>FinTechSarl</strong>, une startup fintech africaine qui vient de migrer son infrastructure vers AWS. L'entreprise traite des données bancaires de 50 000 clients et doit respecter les réglementations locales et PCI-DSS. Une série de décisions de sécurité vous attend. Votre mission : sécuriser l'infrastructure, détecter les menaces et répondre aux incidents efficacement.
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="devoir-q" id="dq1">
+      <div class="dq-num">QUESTION 01 / 15 — Prévention · Introduction</div>
+      <div class="dq-text">Votre équipe doit formaliser les règles d'utilisation des ressources IT pour tous les employés. Quel document devez-vous créer en priorité ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Un manuel de configuration réseau</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Une politique d'utilisation acceptable (AUP) signée par tous les employés</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Un catalogue des serveurs AWS</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Un plan de réponse aux incidents uniquement</div>
+      </div>
+      <div class="dq-explanation" id="dex1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="devoir-q" id="dq2">
+      <div class="dq-num">QUESTION 02 / 15 — Sécurité réseau</div>
+      <div class="dq-text">Vos serveurs web AWS sont exposés à Internet. Où devriez-vous les placer dans votre architecture réseau ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Directement dans le subnet privé avec les bases de données</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Dans une DMZ (zone démilitarisée) séparée du réseau interne</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Sans restriction réseau pour maximiser la performance</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Dans le même subnet que les ressources IAM</div>
+      </div>
+      <div class="dq-explanation" id="dex2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="devoir-q" id="dq3">
+      <div class="dq-num">QUESTION 03 / 15 — PKI & Chiffrement</div>
+      <div class="dq-text">Un client soumet ses données bancaires via votre site web. Quelle combinaison assure la confidentialité en transit ET l'authenticité du serveur ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> HTTP avec pare-feu WAF</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> HTTPS avec certificat X.509 signé par une CA de confiance (TLS 1.3)</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Chiffrement AES-256 sans certificat</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> VPN entre le client et le serveur</div>
+      </div>
+      <div class="dq-explanation" id="dex3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="devoir-q" id="dq4">
+      <div class="dq-num">QUESTION 04 / 15 — AWS IAM</div>
+      <div class="dq-text">Votre application EC2 doit lire des objets dans un bucket S3. Quelle est la méthode la plus sécurisée pour accorder ces permissions ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Stocker des clés d'accès IAM dans le code de l'application</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Utiliser le compte root AWS pour toutes les opérations</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Attacher un rôle IAM avec politique S3:GetObject minimale à l'instance EC2</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Donner l'accès AdministratorAccess à toutes les instances</div>
+      </div>
+      <div class="dq-explanation" id="dex4"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="devoir-q" id="dq5">
+      <div class="dq-num">QUESTION 05 / 15 — Gestion des identités</div>
+      <div class="dq-text">Un développeur de l'équipe utilise le mot de passe "fintech2024" depuis 2 ans. Quelles mesures imposer pour renforcer l'authentification ? (La meilleure réponse complète)</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Changer uniquement le mot de passe</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Imposer MFA + politique de mot de passe fort (12+ caractères, complexité) + rotation régulière</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Bloquer le compte jusqu'à la prochaine réunion</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Supprimer son accès et créer un nouveau compte</div>
+      </div>
+      <div class="dq-explanation" id="dex5"></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="devoir-q" id="dq6">
+      <div class="dq-num">QUESTION 06 / 15 — Sécurité des données</div>
+      <div class="dq-text">FinTechSarl stocke des données PCI-DSS dans une base de données RDS AWS. Quelles mesures de protection des données sont obligatoires ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Mot de passe fort sur la base de données seulement</div>
+        <div class="dq-opt" onclick="selectOpt(this)"><span class="dq-letter">B.</span> Firewall réseau uniquement</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Firewall réseau uniquement</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Chiffrement au repos (KMS) + chiffrement en transit (TLS) + contrôle d'accès strict + sauvegardes chiffrées</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Accès restreint aux administrateurs uniquement</div>
+      </div>
+      <div class="dq-explanation" id="dex6"></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="devoir-q" id="dq7">
+      <div class="dq-num">QUESTION 07 / 15 — Hardening des systèmes</div>
+      <div class="dq-text">Vos instances EC2 (Linux) viennent d'être déployées. Quelle action de hardening est la plus critique en premier ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Installer un antivirus premium</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Appliquer tous les correctifs système disponibles, désactiver les services inutiles et fermer les ports inutilisés</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Créer des snapshots quotidiens</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Activer le monitoring CloudWatch</div>
+      </div>
+      <div class="dq-explanation" id="dex7"></div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="devoir-q" id="dq8">
+      <div class="dq-num">QUESTION 08 / 15 — Détection</div>
+      <div class="dq-text">Vous souhaitez être alerté immédiatement si quelqu'un crée un utilisateur IAM avec des droits administrateur dans votre compte AWS. Quel service utiliser ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> AWS Trusted Advisor uniquement</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> AWS CloudTrail + CloudWatch Events/Alarms avec notification SNS</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Amazon S3 Event Notifications</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> AWS Cost Explorer</div>
+      </div>
+      <div class="dq-explanation" id="dex8"></div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="devoir-q" id="dq9">
+      <div class="dq-num">QUESTION 09 / 15 — AWS Config</div>
+      <div class="dq-text">Un audit PCI-DSS révèle que certains security groups EC2 autorisent le port 3306 (MySQL) depuis n'importe quelle IP. Comment automatiser la détection de ce problème ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Vérifier manuellement chaque semaine</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Utiliser une règle AWS Config pour détecter les SG non conformes en continu</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Envoyer un email aux développeurs</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Supprimer tous les security groups</div>
+      </div>
+      <div class="dq-explanation" id="dex9"></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="devoir-q" id="dq10">
+      <div class="dq-num">QUESTION 10 / 15 — Réponse aux incidents</div>
+      <div class="dq-text">À 3h du matin, une alerte GuardDuty détecte un comportement anormal : des appels API inhabituels depuis un pays étranger avec les credentials d'un développeur. Quelle est la séquence d'actions CORRECTE ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Attendre le matin pour analyser l'alerte avec le développeur</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Supprimer le compte AWS immédiatement</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Désactiver/révoquer immédiatement les credentials compromis → Analyser les actions effectuées via CloudTrail → Contenir les dommages → Éradiquer → Récupérer</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> Changer uniquement le mot de passe du développeur</div>
+      </div>
+      <div class="dq-explanation" id="dex10"></div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="devoir-q" id="dq11">
+      <div class="dq-num">QUESTION 11 / 15 — Forensique & Analyse</div>
+      <div class="dq-text">Suite à l'incident (Q10), vous devez savoir exactement quelles ressources AWS ont été créées ou modifiées avec les credentials compromis. Quel service fournit ces informations ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> Amazon CloudWatch Metrics</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> AWS Trusted Advisor</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> AWS CloudTrail (journal de toutes les actions API)</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> AWS Cost Explorer</div>
+      </div>
+      <div class="dq-explanation" id="dex11"></div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="devoir-q" id="dq12">
+      <div class="dq-num">QUESTION 12 / 15 — Conformité AWS</div>
+      <div class="dq-text">FinTechSarl subit un audit PCI-DSS. L'auditeur demande les rapports de conformité officiels d'AWS prouvant la sécurité de l'infrastructure sous-jacente. Où les trouver ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> AWS CloudTrail</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> AWS Config</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> AWS Artifact (rapports SOC, ISO, PCI-DSS officiels d'AWS)</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> AWS Security Hub</div>
+      </div>
+      <div class="dq-explanation" id="dex12"></div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="devoir-q" id="dq13">
+      <div class="dq-num">QUESTION 13 / 15 — Modèle de responsabilité partagée</div>
+      <div class="dq-text">Suite à un incident, il s'avère que les données clients étaient stockées non chiffrées dans S3. Quelle est la responsabilité d'AWS dans ce cas ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> AWS est entièrement responsable car S3 est son service</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> AWS est responsable de la sécurité physique et de l'infrastructure S3, mais le chiffrement des données client est sous la responsabilité de FinTechSarl</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> La responsabilité est partagée 50/50 entre AWS et le client</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> AWS active automatiquement le chiffrement sur S3</div>
+      </div>
+      <div class="dq-explanation" id="dex13"></div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="devoir-q" id="dq14">
+      <div class="dq-num">QUESTION 14 / 15 — Trusted Advisor & Analyse</div>
+      <div class="dq-text">Vous voulez une vue d'ensemble des risques de sécurité critiques dans votre compte AWS (ports ouverts, MFA manquant, buckets publics) sans analyse manuelle. Quel service consulter ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> AWS Cost Explorer</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> Amazon EC2 Instance Connect</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> AWS Systems Manager</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> AWS Trusted Advisor (contrôles de sécurité automatiques)</div>
+      </div>
+      <div class="dq-explanation" id="dex14"></div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="devoir-q" id="dq15">
+      <div class="dq-num">QUESTION 15 / 15 — Vision globale</div>
+      <div class="dq-text">Pour construire une posture de sécurité complète sur AWS, quel ensemble de services forme la "triade de sécurité" recommandée pour surveillance, conformité et détection de menaces ?</div>
+      <div class="dq-options">
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">A.</span> EC2 + S3 + RDS</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">B.</span> CloudWatch + SNS + SQS</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">C.</span> Amazon GuardDuty + AWS Security Hub + AWS Config</div>
+        <div class="dq-opt" onclick="selectDQ(this)"><span class="dq-letter">D.</span> IAM + VPC + Route 53</div>
+      </div>
+      <div class="dq-explanation" id="dex15"></div>
+    </div>
+
+    <div class="submit-zone">
+      <button class="btn-submit" id="btn-submit" onclick="submitDevoir()">SOUMETTRE LE DEVOIR</button>
+      <button class="btn-reset" id="btn-reset" onclick="resetDevoir()">RECOMMENCER</button>
+    </div>
+
+    <div class="result-panel" id="result-panel">
+      <div class="result-score" id="result-score"></div>
+      <div class="result-label" id="result-label"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-bar-wrap"><div class="result-bar" id="result-bar"></div></div>
+      <div class="result-breakdown" id="result-breakdown"></div>
+    </div>
+
+  </div>
+</div>
+</div><!-- end devoir -->
+
+</div><!-- end main -->
+
+<footer>MODULE SÉCURITÉ INFORMATIQUE & CLOUD AWS · 18 COURS · RÉSUMÉ + QCM + DEVOIR INTERACTIF</footer>
+
+<script>
+// =====================================================
+// QCM LOGIC
+// =====================================================
+const answers = {
+  1: ['b','b','a'], 2: ['d','b','c'], 3: ['a','c','b'],
+  4: ['b','d','a'], 5: ['c','b','d'], 6: ['a','c','b'],
+  7: ['b','c','a'], 8: ['b','c','a'], 9: ['d','a','c'],
+  10: ['b','c','a'], 11: ['c','b','d'], 12: ['a','b','c'],
+  13: ['b','c','b'], 14: ['b','a','d'], 15: ['c','c','b'],
+  16: ['c','b','d'], 17: ['a','c','b'], 18: ['b','d','c']
+};
+
+const explanations = {
+  1: ['Le ransomware chiffre et rend vos fichiers inaccessibles → violation de la Disponibilité, et potentiellement de l\'Intégrité.',
+      'Le principe du moindre privilège = droits minimaux stritement nécessaires. Ni plus, ni moins.',
+      'Un employé interne malveillant = menace interne. Les autres options (DDoS, phishing, SQLi) viennent de l\'extérieur.'],
+  2: ['L\'AUP définit les règles d\'usage et protège légalement l\'organisation. Elle est signée pour prouver l\'acceptation.',
+      'La configuration technique du pare-feu relève du document d\'architecture technique, pas de l\'AUP.',
+      'La révision annuelle est le minimum recommandé par les frameworks de sécurité.'],
+  3: ['Le cycle correct : Prévention → Détection → Réponse → Analyse (boucle d\'amélioration continue).',
+      'Risque = Probabilité × Impact. C\'est la formule fondamentale de gestion des risques.',
+      'Souscrire une assurance transfère le risque financier à un tiers. Atténuer = réduire le risque techniquement.'],
+  4: ['La DMZ (Zone Démilitarisée) est un réseau tampon qui expose les services publics tout en protégeant le réseau interne.',
+      'IDS = détecte et alerte. IPS = détecte ET bloque activement le trafic malveillant.',
+      'Zero Trust : "Ne jamais faire confiance, toujours vérifier". Même les utilisateurs internes doivent être authentifiés.'],
+  5: ['Hardening = réduire la surface d\'attaque. Désactiver services inutiles, ports, comptes par défaut.',
+      'CVSS (Common Vulnerability Scoring System) note les vulnérabilités de 0 à 10 pour prioriser les correctifs.',
+      'EDR = analyse comportementale + réponse active. Antivirus classique = signatures de malwares connus.'],
+  6: ['3-2-1 : 3 copies de données, sur 2 types de supports différents, dont 1 copie hors site (ou cloud).',
+      'Asymétrique : clé PUBLIQUE pour chiffrer (partageable), clé PRIVÉE pour déchiffrer (secrète).',
+      'DLP (Data Loss Prevention) = surveiller les flux de données pour détecter et bloquer les fuites.'],
+  7: ['La CA émet et signe des certificats numériques après vérification de l\'identité du demandeur.',
+      'CRL = liste des certificats révoqués avant leur date d\'expiration (clé compromise, CA révoquée, etc.).',
+      'Le standard X.509 définit le format des certificats numériques dans la PKI (clé publique + identité + signature CA).'],
+  8: ['MFA requiert au moins 2 facteurs de natures DIFFÉRENTES : ex. mot de passe (connaissance) + OTP (possession).',
+      'SSO = une authentification unique donne accès à plusieurs services sans re-saisir les credentials.',
+      'L\'empreinte digitale est liée à CE QUE VOUS ÊTES = facteur d\'inhérence (biométrie).'],
+  9: ['Les rôles IAM sont temporaires et ne nécessitent pas de credentials stockés. Parfait pour les services AWS.',
+      'Le Deny explicite est toujours prioritaire dans IAM. Même si un Allow existe, un Deny l\'emporte.',
+      'Compte root : activer MFA obligatoirement et ne jamais utiliser pour des tâches quotidiennes.'],
+  10: ['MTTD = Mean Time To Detect = temps moyen entre la compromission et sa détection. Objectif : réduire ce délai.',
+       'SIEM = Security Information and Event Management. Centralise et corrèle les logs pour détecter des attaques.',
+       'Honeypot = système leurre conçu pour attirer les attaquants et détecter leurs tentatives d\'intrusion.'],
+  11: ['CloudTrail enregistre TOUTES les actions API AWS : qui, quoi, quand, depuis où. C\'est le journal d\'audit AWS.',
+       'Sans Trail configuré, CloudTrail ne conserve que 90 jours d\'historique. Créer un Trail envoie vers S3.',
+       'Trail vers S3 = rétention illimitée (configurée via les politiques de cycle de vie S3).'],
+  12: ['Config surveille les CONFIGURATIONS des ressources. CloudTrail trace les ACTIONS API. Complémentaires !',
+       'Cette règle Config détecte automatiquement les buckets S3 avec ACL publique et les marque "Non conforme".',
+       'Conformance Pack = collection de règles Config alignées sur PCI-DSS, HIPAA, CIS AWS Benchmark, etc.'],
+  13: ['La préparation est la 1ère phase NIST. Sans plan préparé à l\'avance, la réponse est chaotique.',
+       'CONFINER d\'abord = isoler le système compromis du reste du réseau pour limiter la propagation.',
+       'Chaîne de custody = documentation traçant qui a eu accès aux preuves numériques, quand et dans quel état.'],
+  14: ['5 Pourquoi = technique de questionnement itératif pour remonter à la cause racine fondamentale.',
+       'MITRE ATT&CK = référentiel mondial des tactiques (TA) et techniques (T) utilisées par les cyberattaquants.',
+       'Bug Bounty = programme invitant des hackers éthiques à trouver des vulnérabilités réelles contre récompense.'],
+  15: ['Trusted Advisor couvre 5 catégories : Sécurité, Coûts, Performance, Tolérance aux pannes, Limites de service.',
+       'Support Basic : 7 contrôles de sécurité gratuits. Business/Enterprise : accès complet à tous les contrôles.',
+       'Port 22 ou 3306 ouvert à 0.0.0.0/0 = alerte rouge critique dans Trusted Advisor.'],
+  16: ['Défense en profondeur = couches multiples. Si le firewall est contourné, le EDR détecte. Si l\'EDR échoue, le chiffrement protège.',
+       'Tabletop = simulation de crise en salle de réunion, sans actions techniques. Test du plan et des rôles.',
+       'Niveau 4 (Géré) : métriques définies, mesurées et amélioration continue basée sur les données.'],
+  17: ['Chiffrement des données dans S3 = responsabilité CLIENT (Security IN the Cloud). AWS sécurise l\'infrastructure S3.',
+       'PCI-DSS (Payment Card Industry Data Security Standard) = standard pour données de cartes bancaires.',
+       'AWS Well-Architected Security Pillar : 5 domaines = IAM + Détection + Infrastructure + Données + Réponse.'],
+  18: ['Amazon Macie utilise le ML pour détecter automatiquement les données PII, PHI, et financières dans S3.',
+       'GuardDuty = IDS intelligent cloud. Analyse CloudTrail logs, VPC Flow Logs et DNS logs via ML.',
+       'AWS Artifact = portail de téléchargement des rapports de conformité officiels AWS (SOC 1/2/3, ISO 27001, PCI-DSS).']
+};
+
+let totalQ = 0, answeredQ = 0;
+
+function countAllQ() {
+  totalQ = document.querySelectorAll('.qcm-q').length;
+}
+
+function selectOpt(el) {
+  const q = el.closest('.qcm-q');
+  if (q.dataset.answered) return;
+  q.querySelectorAll('.qcm-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function validateQ(btn) {
+  const q = btn.closest('.qcm-q');
+  if (q.dataset.answered) return;
+  const selected = q.querySelector('.qcm-opt.selected');
+  if (!selected) return;
+  q.dataset.answered = '1';
+  btn.disabled = true;
+
+  const opts = [...q.querySelectorAll('.qcm-opt')];
+  const letters = ['a','b','c','d'];
+  const selectedIdx = opts.indexOf(selected);
+  const lesson = parseInt(q.closest('.lesson').dataset.lesson);
+  const qIdx = [...q.closest('.lesson').querySelectorAll('.qcm-q')].indexOf(q);
+  const correct = answers[lesson][qIdx];
+  const isCorrect = letters[selectedIdx] === correct;
+  const correctIdx = letters.indexOf(correct);
+
+  selected.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect && correctIdx >= 0) opts[correctIdx].classList.add('correct');
+
+  const fb = q.querySelector('.q-feedback');
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = isCorrect
+    ? '✓ Correct ! ' + explanations[lesson][qIdx]
+    : '✗ Incorrect. ' + explanations[lesson][qIdx];
+
+  answeredQ++;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((answeredQ / totalQ) * 100);
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '%';
+}
+
+function toggleLesson(header) {
+  const lesson = header.closest('.lesson');
+  lesson.classList.toggle('open');
+}
+
+function scrollToPhase(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// =====================================================
+// DEVOIR FINAL LOGIC
+// =====================================================
+const devoirAnswers = {
+  1: 'b', 2: 'b', 3: 'b', 4: 'c', 5: 'b',
+  6: 'c', 7: 'b', 8: 'b', 9: 'b', 10: 'c',
+  11: 'c', 12: 'c', 13: 'b', 14: 'd', 15: 'c'
+};
+
+const devoirExplanations = {
+  1: { ok: '✓ L\'AUP est le premier document à créer. Elle définit les règles, les usages interdits et les sanctions. Sans elle, les employés ne connaissent pas leurs obligations légales en matière de sécurité IT.', fail: '✗ L\'AUP (Politique d\'Utilisation Acceptable) doit être prioritaire. C\'est le fondement légal et éducatif de toute stratégie de sécurité IT.' },
+  2: { ok: '✓ La DMZ isole les serveurs web publics du réseau interne. Si un serveur web est compromis, l\'attaquant ne peut pas directement accéder aux bases de données internes.', fail: '✗ Les serveurs web doivent être en DMZ. Les placer dans le subnet privé avec les BDD ou sans restriction est une erreur architecturale majeure.' },
+  3: { ok: '✓ HTTPS avec certificat X.509 signé par une CA (via TLS 1.3) assure le chiffrement en transit ET l\'authenticité du serveur via la chaîne de confiance PKI.', fail: '✗ HTTPS avec certificat X.509 (TLS 1.3) est la seule option qui assure à la fois la confidentialité en transit et l\'authenticité du serveur via PKI.' },
+  4: { ok: '✓ Un rôle IAM attaché à EC2 avec la permission minimale S3:GetObject est la best practice. Pas de credentials à gérer, rotation automatique des tokens temporaires.', fail: '✗ Ne jamais stocker des clés IAM dans le code ! Utiliser des rôles IAM : credentials temporaires, rotation automatique, principe du moindre privilège.' },
+  5: { ok: '✓ MFA + politique de mots de passe forts + rotation = protection multicouche. MFA seul bloque 99% des attaques de type credential stuffing.', fail: '✗ Changer le mot de passe seul est insuffisant. MFA + politique forte + rotation est la combinaison recommandée par tous les frameworks de sécurité.' },
+  6: { ok: '✓ PCI-DSS exige explicitement : chiffrement au repos (AES-256), chiffrement en transit (TLS), contrôle d\'accès strict et piste d\'audit. AWS KMS gère les clés de chiffrement RDS.', fail: '✗ PCI-DSS impose chiffrement au repos + en transit + contrôle d\'accès + sauvegardes sécurisées. Une seule mesure est insuffisante pour la conformité.' },
+  7: { ok: '✓ Le hardening initial = patches + désactivation des services inutiles + fermeture des ports. C\'est la base du CIS Benchmark pour Linux.', fail: '✗ Le hardening (patches + services + ports) est la priorité. Réduire la surface d\'attaque avant tout autre mesure.' },
+  8: { ok: '✓ CloudTrail enregistre toutes les actions API IAM. CloudWatch Events peut déclencher une alarme SNS sur les événements IAM CreateUser avec droits admin. Combinaison parfaite.', fail: '✗ CloudTrail + CloudWatch Events + SNS est la combinaison pour des alertes en temps réel sur les actions AWS critiques. Trusted Advisor fait des vérifications périodiques, pas en temps réel.' },
+  9: { ok: '✓ Une règle AWS Config "restricted-common-ports" évalue en continu si des security groups exposent des ports sensibles. Remédiation automatique possible via SSM.', fail: '✗ AWS Config avec une règle de conformité détecte automatiquement et en continu les security groups non conformes. C\'est la solution scalable.' },
+  10: { ok: '✓ La séquence correcte : 1) Révoquer les credentials compromis (URGENT) → 2) Analyser CloudTrail (quelles actions ?) → 3) Contenir → 4) Éradiquer → 5) Récupérer.', fail: '✗ Attendre est dangereux. Éteindre le compte AWS est excessif. La bonne séquence : révoquer credentials → analyser CloudTrail → contenir → éradiquer → récupérer.' },
+  11: { ok: '✓ AWS CloudTrail enregistre TOUTES les actions API : CreateBucket, RunInstances, CreateUser, etc. C\'est le seul service qui répond à "qui a fait quoi et quand".', fail: '✗ AWS CloudTrail est le journal d\'audit de toutes les actions API AWS. Seul lui peut répondre à "quelles actions ont été effectuées avec ces credentials ?".' },
+  12: { ok: '✓ AWS Artifact est le portail officiel pour télécharger les rapports de conformité AWS : SOC 1/2/3, ISO 27001, PCI-DSS, HIPAA, etc. Indispensable pour les audits.', fail: '✗ AWS Artifact est le seul service qui fournit les rapports de conformité officiels d\'AWS (SOC, ISO, PCI-DSS). CloudTrail et Config couvrent VOS configurations.' },
+  13: { ok: '✓ Modèle de responsabilité partagée : AWS sécurise L\'infrastructure S3 (physique, réseau, data center). Le client est responsable DU chiffrement de SES données dans S3.', fail: '✗ Responsabilité partagée : AWS = sécurité DE l\'infrastructure (physique/réseau). Client = sécurité DANS le cloud (données, configs, chiffrement, IAM).' },
+  14: { ok: '✓ AWS Trusted Advisor analyse automatiquement le compte AWS et signale les risques : ports ouverts, MFA manquant, buckets publics, clés non rotées. Vue consolidée immédiate.', fail: '✗ AWS Trusted Advisor est le "conseiller automatique" qui analyse votre compte et identifie proactivement les risques de sécurité, coûts, performance et fiabilité.' },
+  15: { ok: '✓ GuardDuty (détection de menaces ML) + Security Hub (tableau de bord centralisé) + Config (conformité de configuration) = triade recommandée par AWS pour une sécurité complète.', fail: '✗ La triade de sécurité AWS recommandée : GuardDuty (détection menaces) + Security Hub (centralisation) + Config (conformité). À activer dans toutes les régions !' }
+};
+
+function selectDQ(el) {
+  const q = el.closest('.devoir-q');
+  if (q.dataset.answered) return;
+  q.querySelectorAll('.dq-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function submitDevoir() {
+  const btn = document.getElementById('btn-submit');
+  let correct = 0;
+  let unanswered = 0;
+
+  for (let i = 1; i <= 15; i++) {
+    const q = document.getElementById('dq' + i);
+    const opts = [...q.querySelectorAll('.dq-opt')];
+    const letters = ['a', 'b', 'c', 'd'];
+    const selected = q.querySelector('.dq-opt.selected');
+    const exp = document.getElementById('dex' + i);
+
+    if (!selected) { unanswered++; continue; }
+
+    q.dataset.answered = '1';
+    const selIdx = opts.indexOf(selected);
+    const correctLetter = devoirAnswers[i];
+    const correctIdx = letters.indexOf(correctLetter);
+    const isOk = letters[selIdx] === correctLetter;
+
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    selected.classList.add(isOk ? 'correct' : 'wrong');
+    if (!isOk && correctIdx >= 0) opts[correctIdx].classList.add('correct');
+
+    exp.className = 'dq-explanation show ' + (isOk ? 'ok' : 'fail');
+    exp.textContent = isOk ? devoirExplanations[i].ok : devoirExplanations[i].fail;
+
+    if (isOk) correct++;
+  }
+
+  if (unanswered > 0) {
+    alert(`⚠️ Vous n'avez pas répondu à ${unanswered} question(s). Veuillez répondre à toutes les questions avant de soumettre.`);
+    return;
+  }
+
+  const pct = Math.round((correct / 15) * 100);
+  const panel = document.getElementById('result-panel');
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const scoreEl = document.getElementById('result-score');
+  scoreEl.textContent = correct + '/15';
+  scoreEl.className = 'result-score ' + (pct >= 80 ? 'excellent' : pct >= 60 ? 'good' : 'fail');
+
+  const labels = {
+    excellent: ['🏆 EXCELLENT — Maîtrise confirmée !', 'Vous maîtrisez le module de sécurité. Votre infrastructure FinTechSarl est entre de bonnes mains.'],
+    good: ['✅ BIEN — Bonne compréhension', 'Bonne maîtrise globale. Revoyez les cours correspondant aux questions manquées.'],
+    fail: ['📚 À REVOIR', 'Certains concepts fondamentaux nécessitent une révision. Relisez attentivement les cours et réessayez.']
+  };
+  const lvl = pct >= 80 ? 'excellent' : pct >= 60 ? 'good' : 'fail';
+  document.getElementById('result-label').textContent = labels[lvl][0];
+  document.getElementById('result-sub').textContent = labels[lvl][1];
+
+  setTimeout(() => {
+    document.getElementById('result-bar').style.width = pct + '%';
+  }, 100);
+
+  document.getElementById('result-breakdown').innerHTML = `
+    <div class="rb-item">SCORE : ${pct}%</div>
+    <div class="rb-item g">CORRECTES : ${correct}</div>
+    <div class="rb-item r">INCORRECTES : ${15 - correct}</div>
+    <div class="rb-item">QUESTIONS : 15</div>
+  `;
+
+  btn.style.display = 'none';
+  document.getElementById('btn-reset').style.display = 'inline-block';
+}
+
+function resetDevoir() {
+  for (let i = 1; i <= 15; i++) {
+    const q = document.getElementById('dq' + i);
+    q.removeAttribute('data-answered');
+    q.querySelectorAll('.dq-opt').forEach(o => {
+      o.classList.remove('selected', 'correct', 'wrong');
+      o.style.pointerEvents = '';
+    });
+    const exp = document.getElementById('dex' + i);
+    exp.className = 'dq-explanation';
+    exp.textContent = '';
+  }
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('btn-submit').style.display = 'inline-block';
+  document.getElementById('btn-reset').style.display = 'none';
+  document.getElementById('dq1').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Fix duplicate B option in Q6
+(function() {
+  const q6 = document.getElementById('dq6');
+  if (q6) {
+    const opts = q6.querySelectorAll('.dq-opt');
+    if (opts.length > 4) {
+      opts[1].remove(); // remove duplicate B
+    }
+  }
+})();
+
+// Init
+countAllQ();
+</script>
+</body>
+</html>
